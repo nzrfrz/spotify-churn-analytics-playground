@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    * {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 500;
+    }
+
+    #age,
+    #genders,
+    #country,
+    #listening_time,
+    #songs_played_per_day,
+    #ads_listened,
+    #subcription_type {
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #3B9797;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .value-bubble {
+      position: absolute;
+      top: 16px;
+      transform: translateX(-50%);
+      background: #0046FF;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .12s ease, top .12s ease;
+    }
+
+    .slider-wrapper:hover .value-bubble,
+    .slider-wrapper:focus-within .value-bubble {
+      opacity: 1;
+      top: 16px;
+    }
+
+    .range-values {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 0 2px;
+      margin-top: -8px;
+      color: #ffffffcc;
+    }
+
+    input[type="range"] {
+      accent-color: #0046FF;
+    }
+
+    .button {
+      cursor: pointer;
+      position: relative;
+      padding: 8px 16px;
+      font-size: 18px;
+      color: rgb(193, 163, 98);
+      border: 2px solid rgb(193, 163, 98);
+      border-radius: 34px;
+      background-color: transparent;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+      overflow: hidden;
+    }
+
+    .button::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 50px;
+      height: 50px;
+      border-radius: inherit;
+      scale: 0;
+      z-index: -1;
+      background-color: rgb(193, 163, 98);
+      transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+    }
+
+    .button:hover::before {
+      scale: 4;
+    }
+
+    .button:hover {
+      color: #212121;
+      scale: 1.1;
+      box-shadow: 0 0px 20px rgba(193, 163, 98, 0.4);
+    }
+
+    .button:active {
+      scale: 1;
+    }
+
+    .w3-container::after,
+    .w3-container::before {
+      content: "";
+      clear: both;
+    }
+  </style>
+
+</head>
+
+<body style="background: #16476A; color: white;">
+  <div style="display: flex; flex-direction: column; gap: 16px; padding: 32px;">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span style="font-size: 24px;">Spotify Churn Prediction</span>
+      <span style="font-size: 16px;">Simulate New User</span>
+    </div>
+    <!-- FORM START -->
+    <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 16px;">
+
+      <div style="display: flex; flex: 1 1 250px; flex-direction: column; gap: 16px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span>Age: </span>
+          <input id="age" type="number" min="10" max="120" value="30" />
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span>Gender: </span>
+          <select name="gender" id="genders">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Others">Other</option>
+          </select>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span>Country: </span>
+          <select name="country" id="country">
+            <option value="AU">Australia (AU)</option>
+            <option value="CA">Canada (CA)</option>
+            <option value="DE">Germany (DE)</option>
+            <option value="FR">France (FE)</option>
+            <option value="IN">India (IN)</option>
+            <option value="PK">Pakistan (PK)</option>
+            <option value="UK">United Kingdom (UK)</option>
+            <option value="US">United States (US)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span>Subscription Type: </span>
+          <select name="subscription_type" id="subcription_type">
+            <option value="Free">Free</option>
+            <option value="Premium">Premium</option>
+            <option value="Family">Family</option>
+            <option value="Student">Student</option>
+          </select>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span>Listening Time (Minutes): </span>
+          <input id="listening_time" type="number" min="0" max="10000" value="120" />
+        </div>
+      </div>
+
+      <div style="display: flex; flex: 1 1 250px; flex-direction: column; gap: 16px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span>Songs Played Per Day: </span>
+          <input id="songs_played_per_day" type="number" min="0" max="10000" value="50" />
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span>Skip Rate (%): </span>
+
+          <div id="sliderWrap" class="slider-wrapper">
+            <div id="bubble" class="value-bubble">30%</div>
+
+            <!-- slider -->
+            <input id="slider" type="range" min="0.0" max="1.0" step="0.01" value="0.30">
+
+            <div class="range-values">
+              <span id="minVal">0.0</span>
+              <span id="maxVal">1.0</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span>Ads Listened Per Week: </span>
+          <input id="ads_listened" type="number" min="0" max="1000" value="5" />
+        </div>
+
+        <div style="display: flex; flex-direction: column; justify-content: center; gap: 8px; height: 55px;">
+          <span>Offline Listening: </span>
+          <div style="display: flex; flex-direction: row; gap: 32px;">
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
+              <input type="radio" id="no" name="offline_listening" value="0" checked="0">
+              <label for="no">No</label><br>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
+              <input type="radio" id="yes" name="offline_listening" value="1">
+              <label for="yes">Yes</label><br>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; justify-content: center; gap: 8px; height: 55px;">
+          <span>Device Type: </span>
+          <div style="display: flex; flex-direction: row; gap: 32px;">
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
+              <input type="radio" id="Mobile" name="device_type" value="Mobile" checked="Mobile">
+              <label for="Mobile">Mobile</label><br>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
+              <input type="radio" id="Desktop" name="device_type" value="Desktop">
+              <label for="Desktop">Desktop</label><br>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 4px;">
+              <input type="radio" id="Web" name="device_type" value="Web">
+              <label for="Web">Web</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM END -->
+    </div>
+
+    <div>
+      <button id="predictBtn" class="button">Predict Churn</button>
+    </div>
+
+    <div id="error-response"></div>
+
+    <div id="responseResults" style="display: none;">
+      <div style="width: 100%; height: 1.5px; background-color: grey; margin-bottom: 16px;"></div>
+      <div id="pred_proba_results" style="display: flex; flex-direction: column; gap: 16px;">
+
+        <div id="predict-result">
+          <span id="predic-title">Prediction: </span>
+          <span style="font-size: 22px; font-weight: 700; color: #ff3333;">CHURN</span>
+        </div>
+
+        <div id="proba-result" style="margin-bottom: 4px;">
+          <span id="proba-title">Probability: </span>
+          <div style="padding-top: 4px;">
+            <div style="color: #000; background-color: #f1f1f1; border-radius: 8px;">
+              <div id="proba-progress"
+                style="width: 0%; color: #fff; background-color: #ff3333; border-radius: 8px; padding-left: 8px;">
+                0%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="user-recommend">
+          <span>Recommendation(s) For User: </span>
+          <div>
+            <ul style="padding-inline-start: 32px; margin-top: 8px;">
+              <li>some string to show</li>
+              <li>some string to show</li>
+              <li>some string to show</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- <div id="result"></div>
+    <div>
+      <button onclick="clickMe()">Click Me</button>
+    </div> -->
+  </div>
+
+  <script>
+    // --- Slider bubble ---
+    const slider = document.getElementById("slider");
+    const bubble = document.getElementById("bubble");
+    const wrap = document.getElementById("sliderWrap");
+
+    function updateBubble() {
+      if (!slider || !bubble || !wrap) return;
+
+      const min = parseFloat(slider.min);
+      const max = parseFloat(slider.max);
+      const val = parseFloat(slider.value);
+
+      const percent = (val - min) / (max - min);
+      const width = wrap.clientWidth;
+      const x = percent * width;
+      bubble.style.left = x + "px";
+      bubble.textContent = (val).toFixed(2);
+    }
+
+    updateBubble();
+
+    slider.addEventListener("input", updateBubble);
+    window.addEventListener("resize", updateBubble);
+    // --- Slider bubble ---
+
+    // --- progress bar ---
+    function move() {
+      let proba = 44.15
+      const elem = document.getElementById("proba-progress");
+      let width = 0;
+      let id = setInterval(frame, 10);
+      function frame() {
+        if (width >= proba) {
+          clearInterval(id);
+        } else {
+          width++;
+          elem.style.width = width + '%';
+          elem.innerHTML = width * 1 + '%';
+        }
+      }
+    }
+    // --- progress bar ---
+
+    // --- form submission ---
+    const predictBtn = document.getElementById("predictBtn");
+
+    predictBtn.addEventListener("click", async function (e) {
+      if (e && typeof e.preventDefault === "function") e.preventDefault();
+
+      const ageEl = document.getElementById("age");
+      const gendersEl = document.getElementById("genders");
+      const countryEl = document.getElementById("country");
+      const subscriptionEl = document.getElementById("subcription_type");
+      const listeningEl = document.getElementById("listening_time");
+      const songsEl = document.getElementById("songs_played_per_day");
+      const adsEl = document.getElementById("ads_listened");
+      const deviceRadio = document.querySelector('input[name="device_type"]:checked');
+      const offlineRadio = document.querySelector('input[name="offline_listening"]:checked');
+
+      const payload = {
+        age: ageEl ? parseInt(ageEl.value, 10) : null,
+        gender: gendersEl ? gendersEl.value : null,
+        country: countryEl ? countryEl.value : null,
+        subscription_type: subscriptionEl ? subscriptionEl.value : null,
+        listening_time: listeningEl ? parseFloat(listeningEl.value) : null,
+        songs_played_per_day: songsEl ? parseInt(songsEl.value, 10) : null,
+        skip_rate: slider ? parseFloat(slider.value) : null,         // 0.00..1.00
+        ads_listened_per_week: adsEl ? parseInt(adsEl.value, 10) : null,
+        offline_listening: offlineRadio ? offlineRadio.value : null, // boolean
+        device_type: deviceRadio ? deviceRadio.value : null
+      };
+
+      const responseNotif = document.getElementById("error-response")
+
+      try {
+        responseNotif.innerHTML = null;
+        const resp = await fetch('http://127.0.0.1:5000/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await resp.json();
+        console.log('response: \n', data);
+        
+
+        if (!data || !data.ok) {
+          responseNotif.innerHTML = "<div style='color:#ffb3b3;'>Server error or invalid response.</div>";
+          return;
+        }
+
+        // show results area (Requirement 1)
+        const responseResultsEl = document.getElementById("responseResults");
+        responseResultsEl.style.display = "block";
+
+        const predBlocks = document.querySelectorAll("#pred_proba_results > div");
+        // first block contains "Prediction: <span>..</span>"
+        const predSpan = predBlocks[0].querySelectorAll("span")[1]; // second span
+        const probaBar = document.getElementById("proba-progress");
+        const progressContainer = probaBar.parentElement.parentElement; // wrapper
+        // set label text and color (Requirement 2)
+        const isChurn = data.prediction === 1;
+        predSpan.textContent = isChurn ? "CHURN" : "NOT CHURN";
+        predSpan.style.color = isChurn ? "#ff3333" : "#6cc070";
+
+        // animate progress bar to probability (Requirement 3)
+        const probaPercent = Math.round((data.probability || 0) * 100);
+        // set background color of bar (Requirement 4)
+        probaBar.style.backgroundColor = isChurn ? "#ff3333" : "#6cc070";
+
+        // animate width smoothly
+        probaBar.style.width = "0%";
+        probaBar.textContent = "0%";
+        let w = 0;
+        const stepMs = 8;
+        const target = probaPercent;
+        const interval = setInterval(() => {
+          if (w >= target) {
+            clearInterval(interval);
+          } else {
+            w++;
+            probaBar.style.width = w + '%';
+            probaBar.textContent = w + '%';
+          }
+        }, stepMs);
+
+        const recContainer = document.getElementById("user-recommend");
+        // find the <ul> inside (original markup)
+        const ul = recContainer.querySelector("ul");
+        // clear old items
+        ul.innerHTML = "";
+        const recs = data.recommendations || [];
+        if (recs.length === 0) {
+          const li = document.createElement("li");
+          li.textContent = "No specific recommendation (low risk).";
+          ul.appendChild(li);
+        } else {
+          recs.forEach(r => {
+            const li = document.createElement("li");
+            li.textContent = r;
+            ul.appendChild(li);
+          });
+        }
+
+      } catch (err) {
+        responseNotif.innerHTML = "<div style='color:#ffb3b3;'>Request failed: " + err.toString() + "</div>";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+
+</html>
